@@ -1,1 +1,1409 @@
 # rafaelgamba.github.io
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabor & Arte | Portal Culinário Completo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        culinary: {
+                            50: '#fdf8f6',
+                            100: '#fbe8e3',
+                            200: '#f7d4cb',
+                            300: '#f0b5a6',
+                            500: '#e56b46',
+                            600: '#d1522c',
+                            700: '#ad3f1e',
+                            800: '#8b3319',
+                            900: '#732b17',
+                        },
+                        amberWarm: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fdf8f6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f0b5a6;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e56b46;
+        }
+    </style>
+</head>
+<body class="bg-culinary-50 text-gray-800 antialiased selection:bg-culinary-500 selection:text-white">
+
+    <!-- Notificação Flutuante / Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-gray-700">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+        <span id="toast-message" class="text-sm font-medium">Ação realizada com sucesso!</span>
+    </div>
+
+    <!-- Cabeçalho & Navegação Principal -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-culinary-200 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('inicio')">
+                    <div class="w-12 h-12 bg-gradient-to-tr from-culinary-700 to-culinary-500 rounded-2xl flex items-center justify-center text-white shadow-md shadow-culinary-500/20">
+                        <i class="fa-solid fa-utensils text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-tight text-gray-900 font-serif">Sabor <span class="text-culinary-600">&</span> Arte</span>
+                        <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Portal Gastronômico</p>
+                    </div>
+                </div>
+
+                <!-- Menu Desktop -->
+                <nav class="hidden md:flex items-center gap-1 bg-culinary-50 p-1.5 rounded-full border border-culinary-200">
+                    <button onclick="switchTab('inicio')" id="nav-btn-inicio" class="nav-btn px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-culinary-700 bg-white shadow-sm">
+                        <i class="fa-solid fa-house mr-2"></i>Início
+                    </button>
+                    <button onclick="switchTab('receitas')" id="nav-btn-receitas" class="nav-btn px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-culinary-700 hover:bg-white/50">
+                        <i class="fa-solid fa-book-open mr-2"></i>Receitas
+                    </button>
+                    <button onclick="switchTab('calculadora')" id="nav-btn-calculadora" class="nav-btn px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-culinary-700 hover:bg-white/50">
+                        <i class="fa-solid fa-calculator mr-2"></i>Conversor
+                    </button>
+                    <button onclick="switchTab('compras')" id="nav-btn-compras" class="nav-btn px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-culinary-700 hover:bg-white/50">
+                        <i class="fa-solid fa-basket-shopping mr-2"></i>Lista de Compras
+                    </button>
+                    <button onclick="switchTab('clube')" id="nav-btn-clube" class="nav-btn px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-culinary-700 hover:bg-white/50">
+                        <i class="fa-solid fa-pen-nib mr-2"></i>Enviar Receita
+                    </button>
+                    <button onclick="switchTab('sobre')" id="nav-btn-sobre" class="nav-btn px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 text-gray-600 hover:text-culinary-700 hover:bg-white/50">
+                        <i class="fa-solid fa-circle-info mr-2"></i>Sobre & Contato
+                    </button>
+                </nav>
+
+                <!-- Botão Favoritos Salvos & Mobile Menu Toggle -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openFavoritesModal()" class="relative p-3 bg-culinary-100 text-culinary-700 rounded-full hover:bg-culinary-200 transition shadow-sm" title="Minhas Receitas Favoritas">
+                        <i class="fa-solid fa-heart text-lg"></i>
+                        <span id="fav-badge" class="absolute -top-1 -right-1 bg-culinary-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-3 bg-gray-100 text-gray-700 rounded-full hover:bg-gray-200 transition">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-culinary-200 px-4 pt-3 pb-5 space-y-2 shadow-xl">
+            <button onclick="switchTab('inicio'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-culinary-700 bg-culinary-50 flex items-center gap-3">
+                <i class="fa-solid fa-house text-culinary-600"></i>Início
+            </button>
+            <button onclick="switchTab('receitas'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-culinary-50 flex items-center gap-3">
+                <i class="fa-solid fa-book-open text-culinary-600"></i>Livro de Receitas
+            </button>
+            <button onclick="switchTab('calculadora'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-culinary-50 flex items-center gap-3">
+                <i class="fa-solid fa-calculator text-culinary-600"></i>Calculadora e Conversor
+            </button>
+            <button onclick="switchTab('compras'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-culinary-50 flex items-center gap-3">
+                <i class="fa-solid fa-basket-shopping text-culinary-600"></i>Lista de Compras
+            </button>
+            <button onclick="switchTab('clube'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-culinary-50 flex items-center gap-3">
+                <i class="fa-solid fa-pen-nib text-culinary-600"></i>Enviar sua Receita
+            </button>
+            <button onclick="switchTab('sobre'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-culinary-50 flex items-center gap-3">
+                <i class="fa-solid fa-circle-info text-culinary-600"></i>Sobre Nós & Contato
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL (ABAS DA SPA) -->
+    <main>
+
+        <!-- ================= ABAS: INÍCIO ================= -->
+        <section id="tab-inicio" class="tab-content block animate-fadeIn">
+            <!-- Hero Section -->
+            <div class="relative bg-gradient-to-br from-gray-900 via-culinary-900 to-culinary-800 text-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#f7d4cb_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="max-w-4xl mx-auto text-center relative z-10">
+                    <span class="inline-flex items-center gap-2 bg-culinary-600/40 border border-culinary-400/30 text-culinary-200 px-4 py-1.5 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
+                        <i class="fa-solid fa-fire text-amberWarm-500"></i> O maior portal gourmet do Brasil
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl font-black tracking-tight mb-6 font-serif leading-tight">
+                        Desperte o <span class="text-culinary-300 italic">Chef</span> que existe em você
+                    </h1>
+                    <p class="text-lg sm:text-xl text-gray-300 mb-10 max-w-2xl mx-auto font-light">
+                        Explore centenas de receitas testadas, dicas de chefs renomados, conversores de medidas e ferramentas para transformar sua cozinha.
+                    </p>
+
+                    <!-- Barra de Pesquisa Interativa -->
+                    <div class="bg-white p-3 rounded-2xl shadow-2xl max-w-2xl mx-auto flex flex-col sm:flex-row gap-2">
+                        <div class="flex-1 flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 focus-within:border-culinary-500 transition">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                            <input type="text" id="hero-search-input" placeholder="O que vamos cozinhar hoje? (ex: massa, bolo, salada...)" class="w-full bg-transparent text-gray-800 placeholder-gray-400 text-sm focus:outline-none">
+                        </div>
+                        <button onclick="handleHeroSearch()" class="bg-culinary-600 hover:bg-culinary-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg shadow-culinary-600/30 flex items-center justify-center gap-2">
+                            <span>Buscar</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <!-- Tags Rápidas -->
+                    <div class="flex flex-wrap justify-center items-center gap-2 mt-6 text-sm">
+                        <span class="text-gray-400 font-medium">Populares:</span>
+                        <button onclick="filterByTag('Massas')" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition text-gray-200">#Massas</button>
+                        <button onclick="filterByTag('Sobremesas')" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition text-gray-200">#Sobremesas</button>
+                        <button onclick="filterByTag('Vegano')" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition text-gray-200">#Vegano</button>
+                        <button onclick="filterByTag('Rápido')" class="bg-white/10 hover:bg-white/20 px-3 py-1 rounded-full transition text-gray-200">#Rápido</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorias Rápidas Grid -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div onclick="filterByCategory('Todas')" class="bg-white p-6 rounded-2xl shadow-lg border border-culinary-100 hover:border-culinary-500 hover:-translate-y-1 transition text-center cursor-pointer group">
+                        <div class="w-14 h-14 mx-auto mb-3 bg-culinary-100 text-culinary-700 rounded-2xl flex items-center justify-center text-xl group-hover:bg-culinary-600 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm">Todas</h3>
+                        <p class="text-xs text-gray-500 mt-1">Explorar tudo</p>
+                    </div>
+                    <div onclick="filterByCategory('Massas')" class="bg-white p-6 rounded-2xl shadow-lg border border-culinary-100 hover:border-culinary-500 hover:-translate-y-1 transition text-center cursor-pointer group">
+                        <div class="w-14 h-14 mx-auto mb-3 bg-culinary-100 text-culinary-700 rounded-2xl flex items-center justify-center text-xl group-hover:bg-culinary-600 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-bowl-food"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm">Massas</h3>
+                        <p class="text-xs text-gray-500 mt-1">Italianas & Arroz</p>
+                    </div>
+                    <div onclick="filterByCategory('Sobremesas')" class="bg-white p-6 rounded-2xl shadow-lg border border-culinary-100 hover:border-culinary-500 hover:-translate-y-1 transition text-center cursor-pointer group">
+                        <div class="w-14 h-14 mx-auto mb-3 bg-culinary-100 text-culinary-700 rounded-2xl flex items-center justify-center text-xl group-hover:bg-culinary-600 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-cake-candles"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm">Sobremesas</h3>
+                        <p class="text-xs text-gray-500 mt-1">Doces & Bolos</p>
+                    </div>
+                    <div onclick="filterByCategory('Vegano')" class="bg-white p-6 rounded-2xl shadow-lg border border-culinary-100 hover:border-culinary-500 hover:-translate-y-1 transition text-center cursor-pointer group">
+                        <div class="w-14 h-14 mx-auto mb-3 bg-culinary-100 text-culinary-700 rounded-2xl flex items-center justify-center text-xl group-hover:bg-culinary-600 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-seedling"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm">Vegano</h3>
+                        <p class="text-xs text-gray-500 mt-1">Saudável & Natural</p>
+                    </div>
+                    <div onclick="filterByCategory('Carnes')" class="bg-white p-6 rounded-2xl shadow-lg border border-culinary-100 hover:border-culinary-500 hover:-translate-y-1 transition text-center cursor-pointer group">
+                        <div class="w-14 h-14 mx-auto mb-3 bg-culinary-100 text-culinary-700 rounded-2xl flex items-center justify-center text-xl group-hover:bg-culinary-600 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-drumstick-bite"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm">Carnes</h3>
+                        <p class="text-xs text-gray-500 mt-1">Grelhados & Assados</p>
+                    </div>
+                    <div onclick="filterByCategory('Rápido')" class="bg-white p-6 rounded-2xl shadow-lg border border-culinary-100 hover:border-culinary-500 hover:-translate-y-1 transition text-center cursor-pointer group">
+                        <div class="w-14 h-14 mx-auto mb-3 bg-culinary-100 text-culinary-700 rounded-2xl flex items-center justify-center text-xl group-hover:bg-culinary-600 group-hover:text-white transition shadow-sm">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-800 text-sm">Rápido</h3>
+                        <p class="text-xs text-gray-500 mt-1">Até 30 minutos</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção: Dica do Chef do Dia -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16">
+                <div class="bg-gradient-to-r from-culinary-700 to-culinary-600 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl">
+                        <i class="fa-solid fa-hat-chef"></i>
+                    </div>
+                    <div class="space-y-4 max-w-2xl relative z-10">
+                        <span class="bg-white/25 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-lightbulb mr-1.5 text-amberWarm-500"></i> Dica de Ouro do Chef
+                        </span>
+                        <h2 class="text-3xl sm:text-4xl font-serif font-bold">Como deixar suas massas com o ponto perfeito "Al Dente"</h2>
+                        <p class="text-culinary-100 leading-relaxed text-sm sm:text-base">
+                            Sempre cozinhe a massa em água fervente abundante (cerca de 1 litro para cada 100g de massa) e adicione sal grosso apenas quando a água começar a ferver. Nunca adicione óleo na água, pois ele impede que o molho adira perfeitamente ao macarrão!
+                        </p>
+                        <div class="flex items-center gap-4 pt-2">
+                            <div class="flex items-center gap-3">
+                                <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=120&q=80" alt="Chef" class="w-12 h-12 rounded-full border-2 border-white object-cover">
+                                <div>
+                                    <h4 class="font-bold text-sm">Chef Marco Antônio</h4>
+                                    <p class="text-xs text-culinary-200">Especialista em Culinária Italiana</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative z-10 w-full lg:w-auto flex justify-center">
+                        <button onclick="switchTab('receitas')" class="bg-white text-culinary-800 hover:bg-culinary-50 font-bold px-8 py-4 rounded-2xl shadow-xl transition transform hover:scale-105 flex items-center gap-3">
+                            <span>Ver Receitas de Massas</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Destaques do Dia (Cards) -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-16">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <span class="text-culinary-600 font-bold text-sm uppercase tracking-wider">Seleção Especial</span>
+                        <h2 class="text-3xl font-serif font-black text-gray-900">Receitas em Destaque</h2>
+                    </div>
+                    <button onclick="switchTab('receitas')" class="text-culinary-700 font-semibold hover:text-culinary-800 flex items-center gap-2 text-sm group">
+                        <span>Ver catálogo completo</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                    </button>
+                </div>
+
+                <div id="featured-recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Gerado Dinamicamente pelo JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABAS: LIVRO DE RECEITAS ================= -->
+        <section id="tab-receitas" class="tab-content hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fadeIn">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-culinary-600 font-bold text-sm uppercase tracking-wider">Catálogo Completo</span>
+                <h1 class="text-4xl font-serif font-black text-gray-900 mt-2">Livro de Receitas</h1>
+                <p class="text-gray-600 mt-3 text-sm">
+                    Filtre por categoria ou pesquise pelo prato desejado. Marque os ingredientes e passos concluídos enquanto cozinha!
+                </p>
+            </div>
+
+            <!-- Controles de Filtros e Busca -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-culinary-100 mb-10 flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-wrap gap-2 w-full lg:w-auto" id="recipe-filter-buttons">
+                    <button onclick="filterRecipes('Todas')" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-culinary-600 text-white shadow-sm">Todas</button>
+                    <button onclick="filterRecipes('Massas')" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200">Massas</button>
+                    <button onclick="filterRecipes('Sobremesas')" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200">Sobremesas</button>
+                    <button onclick="filterRecipes('Vegano')" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200">Vegano</button>
+                    <button onclick="filterRecipes('Carnes')" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200">Carnes</button>
+                    <button onclick="filterRecipes('Rápido')" class="filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200">Rápido</button>
+                </div>
+                <div class="w-full lg:w-80 flex items-center gap-3 px-4 py-2.5 bg-gray-50 rounded-xl border border-gray-200 focus-within:border-culinary-500 transition">
+                    <i class="fa-solid fa-search text-gray-400"></i>
+                    <input type="text" id="recipe-search-input" oninput="handleRecipeSearch()" placeholder="Filtrar receitas..." class="w-full bg-transparent text-sm text-gray-800 focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Grid de Receitas -->
+            <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ================= ABAS: CALCULADORA E CONVERSOR ================= -->
+        <section id="tab-calculadora" class="tab-content hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fadeIn">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-culinary-600 font-bold text-sm uppercase tracking-wider">Utilitários Culinários</span>
+                <h1 class="text-4xl font-serif font-black text-gray-900 mt-2">Calculadora & Conversor de Medidas</h1>
+                <p class="text-gray-600 mt-3 text-sm">
+                    Converta xícaras e colheres em gramas e mililitros para diversos ingredientes, e ajuste as porções de suas receitas.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Card 1: Conversor de Ingredientes -->
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-culinary-100">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-12 h-12 bg-culinary-100 text-culinary-700 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-serif font-bold text-xl text-gray-900">Conversor de Xícaras para Gramas</h3>
+                            <p class="text-xs text-gray-500">Selecione o ingrediente e a quantidade</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Ingrediente</label>
+                            <select id="conv-ingredient" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:border-culinary-500">
+                                <option value="farinha">Farinha de Trigo (1 xíc. = 120g)</option>
+                                <option value="acucar">Açúcar Refinado (1 xíc. = 180g)</option>
+                                <option value="manteiga">Manteiga / Margarina (1 xíc. = 200g)</option>
+                                <option value="leite">Leite / Água (1 xíc. = 240ml)</option>
+                                <option value="cacau">Cacau em Pó (1 xíc. = 100g)</option>
+                                <option value="aveia">Aveia em Flocos (1 xíc. = 90g)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Quantidade em Xícaras</label>
+                            <input type="number" id="conv-amount" value="1" step="0.25" min="0.1" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:border-culinary-500">
+                        </div>
+
+                        <button onclick="calculateConversion()" class="w-full bg-culinary-600 hover:bg-culinary-700 text-white font-semibold py-3.5 rounded-xl transition shadow-md shadow-culinary-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span>Calcular Medida</span>
+                        </button>
+
+                        <div id="conv-result" class="hidden bg-culinary-50 border border-culinary-200 rounded-2xl p-5 text-center mt-4">
+                            <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Resultado Estimado</p>
+                            <p id="conv-result-text" class="text-2xl font-serif font-black text-culinary-800 mt-1">120 gramas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Calculadora de Porções -->
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-culinary-100">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-12 h-12 bg-culinary-100 text-culinary-700 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-serif font-bold text-xl text-gray-900">Ajuste de Porções de Receita</h3>
+                            <p class="text-xs text-gray-500">Recalcule ingredientes para mais pessoas</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Receita Base</label>
+                            <select id="portion-recipe" onchange="updatePortionIngredients()" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:border-culinary-500">
+                                <!-- Preenchido dinamicamente -->
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Porções Originais</label>
+                                <input type="number" id="portion-original" readonly class="w-full bg-gray-100 border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-600">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Desejadas (Pessoas)</label>
+                                <input type="number" id="portion-desired" value="4" min="1" max="50" oninput="calculatePortions()" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:border-culinary-500">
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5">
+                            <p class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Ingredientes Ajustados:</p>
+                            <ul id="portion-ingredients-list" class="space-y-2 text-sm text-gray-600">
+                                <li class="italic text-gray-400">Selecione uma receita acima...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABAS: GERENCIADOR DE LISTA DE COMPRAS ================= -->
+        <section id="tab-compras" class="tab-content hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fadeIn">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-culinary-600 font-bold text-sm uppercase tracking-wider">Organização Prática</span>
+                <h1 class="text-4xl font-serif font-black text-gray-900 mt-2">Gerenciador de Lista de Compras</h1>
+                <p class="text-gray-600 mt-3 text-sm">
+                    Adicione itens necessários para suas receitas. Seus dados ficam salvos automaticamente no navegador (LocalStorage).
+                </p>
+            </div>
+
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-culinary-100">
+                <!-- Formulário para adicionar item -->
+                <div class="flex flex-col sm:flex-row gap-3 mb-8">
+                    <input type="text" id="shopping-input" placeholder="Ex: 2kg de Farinha de Trigo, Tomates, Azeite..." class="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-5 py-3 text-sm font-medium text-gray-800 focus:outline-none focus:border-culinary-500">
+                    <button onclick="addShoppingItem()" class="bg-culinary-600 hover:bg-culinary-700 text-white font-semibold px-8 py-3 rounded-xl transition shadow-md shadow-culinary-600/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Adicionar Item</span>
+                    </button>
+                </div>
+
+                <!-- Lista de Compras -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-800 text-base">Seus Itens (<span id="shopping-count">0</span>)</h3>
+                        <div class="flex gap-2">
+                            <button onclick="clearCompletedShopping()" class="text-xs font-semibold text-gray-500 hover:text-culinary-700 transition">Remover comprados</button>
+                            <span class="text-gray-300">|</span>
+                            <button onclick="clearAllShopping()" class="text-xs font-semibold text-red-500 hover:text-red-700 transition">Limpar tudo</button>
+                        </div>
+                    </div>
+
+                    <div id="shopping-list" class="divide-y divide-gray-100 max-h-96 overflow-y-auto">
+                        <!-- Itens dinâmicos -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABAS: CLUBE DO CHEF / ENVIAR RECEITA ================= -->
+        <section id="tab-clube" class="tab-content hidden max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fadeIn">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-culinary-600 font-bold text-sm uppercase tracking-wider">Comunidade Sabor & Arte</span>
+                <h1 class="text-4xl font-serif font-black text-gray-900 mt-2">Envie sua Receita</h1>
+                <p class="text-gray-600 mt-3 text-sm">
+                    Compartilhe sua criação culinária com milhares de leitores. Sua receita será publicada instantaneamente no portal!
+                </p>
+            </div>
+
+            <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-lg border border-culinary-100">
+                <form id="submit-recipe-form" onsubmit="handleRecipeSubmit(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Título da Receita *</label>
+                            <input type="text" id="sr-title" required placeholder="Ex: Bolo Caseiro de Cenoura" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Categoria *</label>
+                            <select id="sr-category" required class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500">
+                                <option value="Massas">Massas</option>
+                                <option value="Sobremesas">Sobremesas</option>
+                                <option value="Vegano">Vegano</option>
+                                <option value="Carnes">Carnes</option>
+                                <option value="Rápido">Rápido</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tempo de Preparo *</label>
+                            <input type="text" id="sr-time" required placeholder="Ex: 45 min" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Rendimento (Porções) *</label>
+                            <input type="number" id="sr-servings" required value="4" min="1" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Dificuldade *</label>
+                            <select id="sr-difficulty" required class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500">
+                                <option value="Fácil">Fácil</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Avançado">Avançado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">URL da Foto da Receita (Opcional)</label>
+                        <input type="url" id="sr-image" placeholder="https://images.unsplash.com/photo-..." class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500">
+                        <p class="text-xs text-gray-400 mt-1">Se deixar em branco, usaremos uma foto padrão de alta qualidade.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ingredientes (um por linha) *</label>
+                        <textarea id="sr-ingredients" rows="4" required placeholder="2 xícaras de farinha&#10;1 xícara de açúcar&#10;3 ovos" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Modo de Preparo (passo a passo por linha) *</label>
+                        <textarea id="sr-steps" rows="4" required placeholder="Misture os ingredientes secos.&#10;Adicione os ovos e o leite.&#10;Asse em forno pré-aquecido a 180°C." class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-culinary-500"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-culinary-600 hover:bg-culinary-700 text-white font-bold py-4 rounded-xl transition shadow-lg shadow-culinary-600/30 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Publicar Minha Receita</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= ABAS: SOBRE NÓS & CONTATO ================= -->
+        <section id="tab-sobre" class="tab-content hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fadeIn">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <span class="text-culinary-600 font-bold text-sm uppercase tracking-wider">Nossa História</span>
+                <h1 class="text-4xl font-serif font-black text-gray-900 mt-2">Sobre Nós & Contato</h1>
+                <p class="text-gray-600 mt-3 text-sm">
+                    Conheça a essência do portal Sabor & Arte e fale diretamente com nossa equipe de editores e chefs.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-culinary-100 space-y-4">
+                    <h3 class="font-serif font-bold text-2xl text-gray-900">Paixão pela Culinária em Cada Prato</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Fundado em 2020, o <strong>Sabor & Arte</strong> nasceu da união entre chefs profissionais e entusiastas da boa mesa. Nosso objetivo é democratizar a alta gastronomia, trazendo receitas testadas e aprovadas para o conforto da sua casa.
+                    </p>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        Acreditamos que cozinhar é um ato de amor e criatividade. Por isso, oferecemos ferramentas interativas exclusivas para tornar sua jornada na cozinha mais prática, divertida e saborosa.
+                    </p>
+                    <div class="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100 text-center">
+                        <div>
+                            <p class="font-serif font-black text-2xl text-culinary-600">+500</p>
+                            <p class="text-xs text-gray-500 font-medium">Receitas</p>
+                        </div>
+                        <div>
+                            <p class="font-serif font-black text-2xl text-culinary-600">+120k</p>
+                            <p class="text-xs text-gray-500 font-medium">Leitores</p>
+                        </div>
+                        <div>
+                            <p class="font-serif font-black text-2xl text-culinary-600">100%</p>
+                            <p class="text-xs text-gray-500 font-medium">Testadas</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulário de Contato -->
+                <div class="bg-white p-8 rounded-3xl shadow-lg border border-culinary-100">
+                    <h3 class="font-serif font-bold text-2xl text-gray-900 mb-4">Entre em Contato</h3>
+                    <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Seu Nome</label>
+                            <input type="text" required placeholder="Maria Souza" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-culinary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Seu E-mail</label>
+                            <input type="email" required placeholder="maria@email.com" class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-culinary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Mensagem</label>
+                            <textarea rows="3" required placeholder="Escreva sua dúvida, sugestão ou elogio..." class="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-culinary-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-culinary-600 hover:bg-culinary-700 text-white font-semibold py-3 rounded-xl transition shadow-md shadow-culinary-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Enviar Mensagem</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DE DETALHES DA RECEITA -->
+    <div id="recipe-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative animate-scaleUp">
+            <button onclick="closeRecipeModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/80 hover:bg-white text-gray-700 rounded-full flex items-center justify-center shadow-md transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modal-content" class="p-6 sm:p-8">
+                <!-- Conteúdo injetado via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE FAVORITOS -->
+    <div id="favorites-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full max-h-[85vh] overflow-y-auto relative p-6 sm:p-8">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-culinary-100 text-culinary-700 rounded-xl flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-xl text-gray-900">Minhas Receitas Favoritas</h3>
+                </div>
+                <button onclick="closeFavoritesModal()" class="text-gray-400 hover:text-gray-700 text-xl font-bold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="favorites-list" class="space-y-4">
+                <!-- Inserido dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé Completo -->
+    <footer class="bg-gray-900 text-gray-300 pt-16 pb-12 border-t border-gray-800 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-culinary-600 rounded-xl flex items-center justify-center text-white font-bold">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <span class="text-2xl font-black text-white font-serif">Sabor & Arte</span>
+                </div>
+                <p class="text-sm text-gray-400 leading-relaxed">
+                    Sua fonte definitiva de inspiração gastronômica. Receitas testadas, ferramentas inteligentes e paixão pela culinária todos os dias.
+                </p>
+                <div class="flex gap-3 text-lg">
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-culinary-600 rounded-xl flex items-center justify-center text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-culinary-600 rounded-xl flex items-center justify-center text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-culinary-600 rounded-xl flex items-center justify-center text-white transition"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="w-10 h-10 bg-gray-800 hover:bg-culinary-600 rounded-xl flex items-center justify-center text-white transition"><i class="fa-brands fa-pinterest-p"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold text-base mb-4 font-serif">Navegação Rápida</h4>
+                <ul class="space-y-2.5 text-sm">
+                    <li><button onclick="switchTab('inicio')" class="hover:text-culinary-400 transition">Início & Destaques</button></li>
+                    <li><button onclick="switchTab('receitas')" class="hover:text-culinary-400 transition">Livro de Receitas</button></li>
+                    <li><button onclick="switchTab('calculadora')" class="hover:text-culinary-400 transition">Conversor de Medidas</button></li>
+                    <li><button onclick="switchTab('compras')" class="hover:text-culinary-400 transition">Lista de Compras</button></li>
+                    <li><button onclick="switchTab('clube')" class="hover:text-culinary-400 transition">Enviar Receita</button></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold text-base mb-4 font-serif">Categorias Populares</h4>
+                <ul class="space-y-2.5 text-sm">
+                    <li><button onclick="switchTab('receitas'); filterRecipes('Massas')" class="hover:text-culinary-400 transition">Massas & Risotos</button></li>
+                    <li><button onclick="switchTab('receitas'); filterRecipes('Sobremesas')" class="hover:text-culinary-400 transition">Sobremesas & Bolos</button></li>
+                    <li><button onclick="switchTab('receitas'); filterRecipes('Vegano')" class="hover:text-culinary-400 transition">Culinária Vegana</button></li>
+                    <li><button onclick="switchTab('receitas'); filterRecipes('Carnes')" class="hover:text-culinary-400 transition">Carnes & Grelhados</button></li>
+                    <li><button onclick="switchTab('receitas'); filterRecipes('Rápido')" class="hover:text-culinary-400 transition">Pratos Rápidos (30min)</button></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-white font-bold text-base mb-4 font-serif">Newsletter Sabor & Arte</h4>
+                <p class="text-xs text-gray-400 mb-4">Receba novidades semanais de receitas exclusivas direto no seu e-mail.</p>
+                <form onsubmit="handleNewsletter(event)" class="space-y-2">
+                    <input type="email" required placeholder="Seu e-mail favorito" class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-culinary-500">
+                    <button type="submit" class="w-full bg-culinary-600 hover:bg-culinary-700 text-white font-semibold py-2.5 rounded-xl transition text-sm">Inscrever-se</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-gray-800 text-center text-xs text-gray-500">
+            <p>&copy; 2026 Sabor & Arte. Todos os direitos reservados. Feito com amor para amantes da culinária.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT DA APLICAÇÃO -->
+    <script>
+        // Banco de Dados de Receitas Inicial (10 receitas completas)
+        const initialRecipes = [
+            {
+                id: 1,
+                title: "Espaguete à Carbonara Tradicional",
+                category: "Massas",
+                time: "25 min",
+                servings: 4,
+                difficulty: "Médio",
+                image: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=800&q=80",
+                likes: 142,
+                ingredients: [
+                    "400g de espaguete de boa qualidade",
+                    "200g de guanciale (ou pancetta) em cubos",
+                    "4 gemas de ovos grandes",
+                    "1 ovo inteiro",
+                    "100g de queijo Pecorino Romano ralado",
+                    "Pimenta-do-reino preta moída na hora a gosto",
+                    "Sal para a água da massa"
+                ],
+                steps: [
+                    "Coloque uma panela grande com 4 litros de água para ferver. Adicione sal grosso quando levantar fervura.",
+                    "Cozinhe o espaguete pelo tempo indicado na embalagem para ficar 'al dente'.",
+                    "Enquanto a massa cozinha, doure o guanciale em uma frigideira grande sem óleo até ficar crocante e dourado. Desligue o fogo.",
+                    "Em uma tigela, bata as gemas, o ovo inteiro e o queijo Pecorino Romano ralado com bastante pimenta-do-reino até formar um creme homogêneo.",
+                    "Escorra a massa reservando meia xícara da água do cozimento.",
+                    "Adicione a massa quente na frigideira com o guanciale, junte o creme de ovos e queijo, mexendo rapidamente com a água do cozimento reservada para criar um molho cremoso sem cozinhar os ovos."
+                ]
+            },
+            {
+                id: 2,
+                title: "Bolo de Chocolate Trufado com Calda",
+                category: "Sobremesas",
+                time: "50 min",
+                servings: 8,
+                difficulty: "Fácil",
+                image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=800&q=80",
+                likes: 218,
+                ingredients: [
+                    "2 xícaras de farinha de trigo",
+                    "2 xícaras de açúcar refinado",
+                    "1 xícara de cacau em pó 50%",
+                    "1 colher de sopa de fermento em pó",
+                    "1 colher de chá de bicarbonato de sódio",
+                    "2 ovos grandes",
+                    "1 xícara de leite morno",
+                    "1 xícara de óleo de girassol",
+                    "1 xícara de água fervente",
+                    "200g de chocolate meio amargo para a ganache"
+                ],
+                steps: [
+                    "Pré-aqueça o forno a 180°C e unhe uma forma redonda com manteiga e cacau em pó.",
+                    "Em uma tigela grande, misture a farinha, o açúcar, o cacau, o fermento e o bicarbonato.",
+                    "Adicione os ovos, o leite e o óleo, mexendo com um fouet até incorporar.",
+                    "Despeje a água fervente por último e misture delicadamente até obter uma massa lisa.",
+                    "Asse por aproximadamente 40 minutos ou até que o teste do palito saia limpo.",
+                    "Derreta o chocolate com creme de leite para cobrir o bolo antes de servir."
+                ]
+            },
+            {
+                id: 3,
+                title: "Risoto de Cogumelos Frescos",
+                category: "Massas",
+                time: "35 min",
+                servings: 4,
+                difficulty: "Avançado",
+                image: "https://images.unsplash.com/photo-1633964913295-ceb43826e7c9?auto=format&fit=crop&w=800&q=80",
+                likes: 98,
+                ingredients: [
+                    "320g de arroz arbóreo ou carnaroli",
+                    "300g de cogumelos Paris e Shimeji fatiados",
+                    "1 cebola média picada finamente",
+                    "2 dentes de alho picados",
+                    "150ml de vinho branco seco",
+                    "1 litro de caldo de legumes caseiro quente",
+                    "3 colheres de sopa de manteiga gelada",
+                    "1/2 xícara de queijo Parmesão ralado",
+                    "Azeite de oliva, sal e salsinha picada"
+                ],
+                steps: [
+                    "Em uma panela, refogue os cogumelos em azeite com alho até dourarem. Reserve metade para a finalização.",
+                    "Na mesma panela, adicione mais azeite e refogue a cebola até ficar transparente.",
+                    "Acrescente o arroz arbóreo e toste por 2 minutos, mexendo sempre.",
+                    "Despeje o vinho branco e espere evaporar completamente.",
+                    "Adicione o caldo de legumes quente concha por concha, mexendo sem parar até o arroz ficar cremoso e al dente.",
+                    "Desligue o fogo, faça a mantecatura adicionando a manteiga gelada e o parmesão. Sirva com os cogumelos reservados."
+                ]
+            },
+            {
+                id: 4,
+                title: "Bowl Vegano de Quinoa e Abacate",
+                category: "Vegano",
+                time: "20 min",
+                servings: 2,
+                difficulty: "Fácil",
+                image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80",
+                likes: 130,
+                ingredients: [
+                    "1 xícara de quinoa cozida",
+                    "1 abacate maduro cortado em fatias",
+                    "1 xícara de grão-de-bico assado com páprica",
+                    "1 xícara de tomates-cerveja cortados ao meio",
+                    "Folhas de espinafre fresco",
+                    "Molho: suco de 1 limão, 2 colheres de azeite, sal e tahine"
+                ],
+                steps: [
+                    "Cozinhe a quinoa em água com uma pitada de sal por 15 minutos e deixe esfriar.",
+                    "Monte os bowls colocando uma base de espinafre fresco e a quinoa cozida.",
+                    "Disponha o abacate fatiado, os tomates-cerveja e o grão-de-bico crocante de forma harmoniosa.",
+                    "Misture os ingredientes do molho em um potinho e regue o bowl antes de saborear."
+                ]
+            },
+            {
+                id: 5,
+                title: "Filé Mignon ao Molho Madeira",
+                category: "Carnes",
+                time: "30 min",
+                servings: 4,
+                difficulty: "Médio",
+                image: "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=800&q=80",
+                likes: 175,
+                ingredients: [
+                    "4 medalhões altos de filé mignon",
+                    "2 colheres de sopa de manteiga",
+                    "1 cebola picada",
+                    "200g de champignons fatiados",
+                    "1/2 xícara de vinho Madeira",
+                    "1 xícara de caldo de carne",
+                    "1 colher de chá de amido de milho dissolvido em água",
+                    "Sal e pimenta-do-reino a gosto"
+                ],
+                steps: [
+                    "Tempere os medalhões de filé mignon com sal e pimenta-do-reino.",
+                    "Em uma frigideira quente com azeite e manteiga, sele os medalhões ao ponto desejado. Retire e reserve quentes.",
+                    "Na mesma frigideira, refogue a cebola e os champignons.",
+                    "Adicione o vinho Madeira para deglacear o fundo da panela.",
+                    "Acrescente o caldo de carne e o amido dissolvido, mexendo até engrossar e formar um molho brilhante.",
+                    "Despeje o molho quente sobre os medalhões e sirva."
+                ]
+            },
+            {
+                id: 6,
+                title: "Panqueca Rápida de Liquidificador",
+                category: "Rápido",
+                time: "15 min",
+                servings: 4,
+                difficulty: "Fácil",
+                image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=80",
+                likes: 210,
+                ingredients: [
+                    "1 xícara de farinha de trigo",
+                    "1 xícara de leite",
+                    "2 ovos",
+                    "1 pitada de sal",
+                    "1 colher de sopa de óleo",
+                    "Recheio: carne moída refogada ou frango desfiado com requeijão"
+                ],
+                steps: [
+                    "Bata todos os ingredientes da massa no liquidificador até obter uma mistura homogênea.",
+                    "Aqueça uma frigideira antiaderente untada com um fio de óleo.",
+                    "Despeje conchas pequenas de massa, espalhando uniformemente. Doure dos dois lados.",
+                    "Recheie as panquecas com o recheio de sua preferência, enrole, cubra com molho de tomate e leve ao forno para gratinar."
+                ]
+            },
+            {
+                id: 7,
+                title: "Tiramisu Clássico Italiano",
+                category: "Sobremesas",
+                time: "30 min",
+                servings: 6,
+                difficulty: "Médio",
+                image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&w=800&q=80",
+                likes: 189,
+                ingredients: [
+                    "3 ovos (gemas e claras separadas)",
+                    "100g de açúcar refinado",
+                    "250g de queijo Mascarpone",
+                    "200g de biscoito champanhe (savoiardi)",
+                    "1 xícara de café espresso forte e frio",
+                    "2 colheres de sopa de conhaque ou rum (opcional)",
+                    "Cacau em pó para polvilhar"
+                ],
+                steps: [
+                    "Bata as gemas com o açúcar até formar um creme claro e fofo. Adicione o queijo Mascarpone e misture delicadamente.",
+                    "Bata as claras em neve firme e incorpore-as ao creme delicadamente.",
+                    "Misture o café com o licor em um recipiente raso.",
+                    "Mergulhe rapidamente os biscoitos champanhe no café e faça uma camada no fundo de uma travessa.",
+                    "Cubra com metade do creme de Mascarpone. Repita as camadas.",
+                    "Leve à geladeira por pelo menos 4 horas. Polvilhe cacau em pó antes de servir."
+                ]
+            },
+            {
+                id: 8,
+                title: "Salmão Grelhado com Ervas Finas",
+                category: "Rápido",
+                time: "20 min",
+                servings: 2,
+                difficulty: "Fácil",
+                image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=800&q=80",
+                likes: 156,
+                ingredients: [
+                    "2 postas de salmão fresco",
+                    "Suco de 1 limão siciliano",
+                    "2 colheres de sopa de azeite de oliva extra virgem",
+                    "1 ramo de tomilho e alecrim fresco",
+                    "Sal marinho e pimenta-do-reino branca a gosto"
+                ],
+                steps: [
+                    "Tempere as postas de salmão com suco de limão, sal e pimenta-do-reino.",
+                    "Aqueça uma frigideira ou grill com azeite e as ervas frescas.",
+                    "Coloque o salmão com a pele para baixo e grelhe por cerca de 4 a 5 minutos.",
+                    "Vire cuidadosamente e grelhe por mais 3 minutos até dourar. Sirva com aspargos ou legumes salteados."
+                ]
+            }
+        ];
+
+        // Estado Global da Aplicação
+        let recipes = JSON.parse(localStorage.getItem('culinary_recipes')) || initialRecipes;
+        let favorites = JSON.parse(localStorage.getItem('culinary_favorites')) || [];
+        let shoppingList = JSON.parse(localStorage.getItem('culinary_shopping')) || [
+            { id: 1, text: "Farinha de Trigo (1kg)", completed: false },
+            { id: 2, text: "Azeite de Oliva Extra Virgem", completed: true },
+            { id: 3, text: "Tomates Frescos", completed: false }
+        ];
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFeaturedRecipes();
+            renderRecipesGrid();
+            updateFavoritesBadge();
+            renderShoppingList();
+            populatePortionRecipesSelect();
+        });
+
+        // Navegação por Abas (SPA)
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Atualizar botões do menu desktop
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-culinary-700');
+                btn.classList.add('text-gray-600', 'hover:text-culinary-700', 'hover:bg-white/50');
+            });
+            const activeBtn = document.getElementById(`nav-btn-${tabId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white', 'shadow-sm', 'text-culinary-700');
+                activeBtn.classList.remove('text-gray-600', 'hover:text-culinary-700', 'hover:bg-white/50');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Sistema de Toast / Notificações
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            if(type === 'success') {
+                iconEl.className = "fa-solid fa-circle-check text-green-400 text-lg";
+            } else {
+                iconEl.className = "fa-solid fa-circle-info text-amber-400 text-lg";
+            }
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+
+        // Renderizar Destaques (Início)
+        function renderFeaturedRecipes() {
+            const container = document.getElementById('featured-recipes-grid');
+            const featured = recipes.slice(0, 3);
+            container.innerHTML = featured.map(r => createRecipeCardHTML(r)).join('');
+        }
+
+        // Renderizar Catálogo de Receitas
+        let currentCategory = 'Todas';
+        function renderRecipesGrid(filteredList = null) {
+            const container = document.getElementById('recipes-grid');
+            const listToRender = filteredList || recipes;
+
+            if(listToRender.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-500">
+                        <i class="fa-solid fa-utensils text-4xl mb-3 text-culinary-300"></i>
+                        <p class="text-lg font-medium">Nenhuma receita encontrada.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = listToRender.map(r => createRecipeCardHTML(r)).join('');
+        }
+
+        function createRecipeCardHTML(r) {
+            const isFav = favorites.includes(r.id);
+            return `
+                <div class="bg-white rounded-3xl shadow-lg border border-culinary-100 overflow-hidden hover:-translate-y-1.5 transition-all duration-300 flex flex-col group">
+                    <div class="relative h-56 overflow-hidden cursor-pointer" onclick="openRecipeModal(${r.id})">
+                        <img src="${r.image}" alt="${r.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80'">
+                        <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-culinary-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                            ${r.category}
+                        </span>
+                        <button onclick="event.stopPropagation(); toggleFavorite(${r.id})" class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-lg shadow-md transition ${isFav ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}">
+                            <i class="fa-solid fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center gap-4 text-xs text-gray-500 mb-2">
+                                <span><i class="fa-regular fa-clock mr-1 text-culinary-600"></i>${r.time}</span>
+                                <span><i class="fa-solid fa-users mr-1 text-culinary-600"></i>${r.servings} porções</span>
+                                <span><i class="fa-solid fa-gauge-high mr-1 text-culinary-600"></i>${r.difficulty}</span>
+                            </div>
+                            <h3 onclick="openRecipeModal(${r.id})" class="font-serif font-bold text-xl text-gray-900 group-hover:text-culinary-600 transition cursor-pointer mb-3">${r.title}</h3>
+                        </div>
+                        <div class="pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <button onclick="likeRecipe(${r.id})" class="flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-culinary-600 transition">
+                                <i class="fa-solid fa-thumbs-up text-culinary-500"></i>
+                                <span>${r.likes} Curtidas</span>
+                            </button>
+                            <button onclick="openRecipeModal(${r.id})" class="bg-culinary-50 text-culinary-700 hover:bg-culinary-600 hover:text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                                Ver Receita
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filtro por Categoria
+        function filterByCategory(category) {
+            currentCategory = category;
+            switchTab('receitas');
+            
+            // Atualizar botões ativos no livro de receitas
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.textContent.trim() === category) {
+                    btn.className = "filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-culinary-600 text-white shadow-sm";
+                } else {
+                    btn.className = "filter-btn px-5 py-2.5 rounded-xl text-sm font-semibold transition bg-gray-100 text-gray-700 hover:bg-gray-200";
+                }
+            });
+
+            if(category === 'Todas') {
+                renderRecipesGrid(recipes);
+            } else {
+                const filtered = recipes.filter(r => r.category.toLowerCase() === category.toLowerCase());
+                renderRecipesGrid(filtered);
+            }
+        }
+
+        function filterRecipes(category) {
+            filterByCategory(category);
+        }
+
+        // Busca Rápida na Home
+        function handleHeroSearch() {
+            const query = document.getElementById('hero-search-input').value.toLowerCase().trim();
+            if(!query) return;
+            switchTab('receitas');
+            document.getElementById('recipe-search-input').value = query;
+            const filtered = recipes.filter(r => r.title.toLowerCase().includes(query) || r.category.toLowerCase().includes(query));
+            renderRecipesGrid(filtered);
+        }
+
+        function filterByTag(tag) {
+            switchTab('receitas');
+            document.getElementById('recipe-search-input').value = tag;
+            const filtered = recipes.filter(r => r.category.toLowerCase() === tag.toLowerCase() || r.title.toLowerCase().includes(tag.toLowerCase()));
+            renderRecipesGrid(filtered);
+        }
+
+        function handleRecipeSearch() {
+            const query = document.getElementById('recipe-search-input').value.toLowerCase().trim();
+            const filtered = recipes.filter(r => r.title.toLowerCase().includes(query) || r.category.toLowerCase().includes(query) || r.ingredients.some(i => i.toLowerCase().includes(query)));
+            renderRecipesGrid(filtered);
+        }
+
+        // Curtir Receita
+        function likeRecipe(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if(recipe) {
+                recipe.likes++;
+                localStorage.setItem('culinary_recipes', JSON.stringify(recipes));
+                renderRecipesGrid();
+                renderFeaturedRecipes();
+                showToast("Receita curtida com sucesso!");
+            }
+        }
+
+        // Favoritos
+        function toggleFavorite(id) {
+            if(favorites.includes(id)) {
+                favorites = favorites.filter(favId => favId !== id);
+                showToast("Removida dos favoritos", "info");
+            } else {
+                favorites.push(id);
+                showToast("Adicionada aos favoritos!");
+            }
+            localStorage.setItem('culinary_favorites', JSON.stringify(favorites));
+            updateFavoritesBadge();
+            renderRecipesGrid();
+            renderFeaturedRecipes();
+        }
+
+        function updateFavoritesBadge() {
+            const badge = document.getElementById('fav-badge');
+            if(favorites.length > 0) {
+                badge.textContent = favorites.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function openFavoritesModal() {
+            const modal = document.getElementById('favorites-modal');
+            const listContainer = document.getElementById('favorites-list');
+            
+            const favRecipes = recipes.filter(r => favorites.includes(r.id));
+            
+            if(favRecipes.length === 0) {
+                listContainer.innerHTML = `<p class="text-center text-gray-500 py-8">Você ainda não salvou nenhuma receita favorita.</p>`;
+            } else {
+                listContainer.innerHTML = favRecipes.map(r => `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-culinary-50 transition cursor-pointer" onclick="closeFavoritesModal(); openRecipeModal(${r.id})">
+                        <div class="flex items-center gap-3">
+                            <img src="${r.image}" class="w-14 h-14 rounded-xl object-cover">
+                            <div>
+                                <h4 class="font-bold text-sm text-gray-900">${r.title}</h4>
+                                <p class="text-xs text-gray-500">${r.category} • ${r.time}</p>
+                            </div>
+                        </div>
+                        <button onclick="event.stopPropagation(); toggleFavorite(${r.id}); openFavoritesModal();" class="text-red-500 hover:text-red-700 p-2">
+                            <i class="fa-solid fa-heart text-lg"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeFavoritesModal() {
+            const modal = document.getElementById('favorites-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Modal de Detalhes da Receita com Checkboxes interativos
+        function openRecipeModal(id) {
+            const r = recipes.find(item => item.id === id);
+            if(!r) return;
+
+            const isFav = favorites.includes(r.id);
+
+            const modalContent = document.getElementById('modal-content');
+            modalContent.innerHTML = `
+                <div class="relative h-72 rounded-2xl overflow-hidden mb-6 shadow-md">
+                    <img src="${r.image}" alt="${r.title}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-6">
+                        <div class="text-white">
+                            <span class="bg-culinary-600 text-xs font-bold px-3 py-1 rounded-full mb-2 inline-block">${r.category}</span>
+                            <h2 class="text-2xl sm:text-3xl font-serif font-black">${r.title}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-4 py-4 border-y border-gray-100 mb-6 text-sm text-gray-600">
+                    <div class="flex items-center gap-6">
+                        <span><i class="fa-regular fa-clock mr-1 text-culinary-600"></i><b>Tempo:</b> ${r.time}</span>
+                        <span><i class="fa-solid fa-users mr-1 text-culinary-600"></i><b>Porções:</b> ${r.servings}</span>
+                        <span><i class="fa-solid fa-gauge-high mr-1 text-culinary-600"></i><b>Dificuldade:</b> ${r.difficulty}</span>
+                    </div>
+                    <button onclick="toggleFavorite(${r.id}); openRecipeModal(${r.id});" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition ${isFav ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+                        <i class="fa-solid fa-heart"></i>
+                        <span>${isFav ? 'Favoritado' : 'Favoritar'}</span>
+                    </button>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-gray-900 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-basket-shopping text-culinary-600"></i> Ingredientes
+                            <span class="text-xs font-sans font-normal text-gray-400">(Marque os itens já separados)</span>
+                        </h3>
+                        <ul class="space-y-2 bg-culinary-50/50 p-5 rounded-2xl border border-culinary-100">
+                            ${r.ingredients.map((ing, idx) => `
+                                <li class="flex items-start gap-3">
+                                    <input type="checkbox" id="ing-${idx}" class="mt-1 w-4 h-4 text-culinary-600 rounded border-gray-300 focus:ring-culinary-500 cursor-pointer">
+                                    <label for="ing-${idx}" class="text-sm text-gray-700 cursor-pointer select-none">${ing}</label>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 class="font-serif font-bold text-xl text-gray-900 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-culinary-600"></i> Modo de Preparo
+                            <span class="text-xs font-sans font-normal text-gray-400">(Marque os passos concluídos)</span>
+                        </h3>
+                        <div class="space-y-3">
+                            ${r.steps.map((step, idx) => `
+                                <div class="flex items-start gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:border-culinary-200 transition">
+                                    <input type="checkbox" id="step-${idx}" class="mt-1.5 w-5 h-5 text-culinary-600 rounded border-gray-300 focus:ring-culinary-500 cursor-pointer">
+                                    <label for="step-${idx}" class="text-sm text-gray-700 cursor-pointer select-none">
+                                        <strong class="text-culinary-700 mr-1">Passo ${idx + 1}:</strong> ${step}
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeRecipeModal() {
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Conversor de Ingredientes
+        const conversionRates = {
+            farinha: { name: "g", gramsPerCup: 120 },
+            acucar: { name: "g", gramsPerCup: 180 },
+            manteiga: { name: "g", gramsPerCup: 200 },
+            leite: { name: "ml", gramsPerCup: 240 },
+            cacau: { name: "g", gramsPerCup: 100 },
+            aveia: { name: "g", gramsPerCup: 90 }
+        };
+
+        function calculateConversion() {
+            const ingredientKey = document.getElementById('conv-ingredient').value;
+            const amount = parseFloat(document.getElementById('conv-amount').value) || 0;
+            const item = conversionRates[ingredientKey];
+
+            const total = amount * item.gramsPerCup;
+            const resultBox = document.getElementById('conv-result');
+            const resultText = document.getElementById('conv-result-text');
+
+            resultText.textContent = `${total.toFixed(0)} ${item.name}`;
+            resultBox.classList.remove('hidden');
+        }
+
+        // Calculadora de Porções
+        function populatePortionRecipesSelect() {
+            const select = document.getElementById('portion-recipe');
+            select.innerHTML = recipes.map(r => `<option value="${r.id}">${r.title} (${r.servings} porções)</option>`).join('');
+            updatePortionIngredients();
+        }
+
+        function updatePortionIngredients() {
+            const recipeId = parseInt(document.getElementById('portion-recipe').value);
+            const recipe = recipes.find(r => r.id === recipeId);
+            if(!recipe) return;
+
+            document.getElementById('portion-original').value = recipe.servings;
+            document.getElementById('portion-desired').value = recipe.servings;
+            calculatePortions();
+        }
+
+        function calculatePortions() {
+            const recipeId = parseInt(document.getElementById('portion-recipe').value);
+            const recipe = recipes.find(r => r.id === recipeId);
+            if(!recipe) return;
+
+            const original = recipe.servings;
+            const desired = parseInt(document.getElementById('portion-desired').value) || 1;
+            const ratio = desired / original;
+
+            const listEl = document.getElementById('portion-ingredients-list');
+            listEl.innerHTML = recipe.ingredients.map(ing => {
+                // Tenta extrair números do ingrediente para recalcular proporcionalmente
+                let recalculatedIng = ing;
+                const numbers = ing.match(/[\d,\.]+/);
+                if(numbers) {
+                    const originalNum = parseFloat(numbers[0].replace(',', '.'));
+                    if(!isNaN(originalNum)) {
+                        const newNum = (originalNum * ratio).toFixed(1).replace('.0', '');
+                        recalculatedIng = ing.replace(numbers[0], newNum);
+                    }
+                }
+                return `<li>• ${recalculatedIng}</li>`;
+            }).join('');
+        }
+
+        // Lista de Compras LocalStorage
+        function renderShoppingList() {
+            const container = document.getElementById('shopping-list');
+            document.getElementById('shopping-count').textContent = shoppingList.length;
+
+            if(shoppingList.length === 0) {
+                container.innerHTML = `<p class="text-center text-gray-400 py-6 text-sm">Sua lista de compras está vazia.</p>`;
+                return;
+            }
+
+            container.innerHTML = shoppingList.map(item => `
+                <div class="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-gray-50 transition">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="toggleShoppingItem(${item.id})" class="w-5 h-5 text-culinary-600 rounded border-gray-300 focus:ring-culinary-500 cursor-pointer">
+                        <span class="text-sm font-medium ${item.completed ? 'line-through text-gray-400' : 'text-gray-800'}">${item.text}</span>
+                    </div>
+                    <button onclick="deleteShoppingItem(${item.id})" class="text-gray-400 hover:text-red-500 transition p-1">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addShoppingItem() {
+            const input = document.getElementById('shopping-input');
+            const text = input.value.trim();
+            if(!text) return;
+
+            shoppingList.push({
+                id: Date.now(),
+                text: text,
+                completed: false
+            });
+
+            input.value = '';
+            localStorage.setItem('culinary_shopping', JSON.stringify(shoppingList));
+            renderShoppingList();
+            showToast("Item adicionado à lista de compras!");
+        }
+
+        function toggleShoppingItem(id) {
+            const item = shoppingList.find(i => i.id === id);
+            if(item) {
+                item.completed = !item.completed;
+                localStorage.setItem('culinary_shopping', JSON.stringify(shoppingList));
+                renderShoppingList();
+            }
+        }
+
+        function deleteShoppingItem(id) {
+            shoppingList = shoppingList.filter(i => i.id !== id);
+            localStorage.setItem('culinary_shopping', JSON.stringify(shoppingList));
+            renderShoppingList();
+            showToast("Item removido", "info");
+        }
+
+        function clearCompletedShopping() {
+            shoppingList = shoppingList.filter(i => !i.completed);
+            localStorage.setItem('culinary_shopping', JSON.stringify(shoppingList));
+            renderShoppingList();
+            showToast("Itens comprados removidos");
+        }
+
+        function clearAllShopping() {
+            shoppingList = [];
+            localStorage.setItem('culinary_shopping', JSON.stringify(shoppingList));
+            renderShoppingList();
+            showToast("Lista de compras limpa");
+        }
+
+        // Envio de Nova Receita pelo Usuário
+        function handleRecipeSubmit(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('sr-title').value;
+            const category = document.getElementById('sr-category').value;
+            const time = document.getElementById('sr-time').value;
+            const servings = parseInt(document.getElementById('sr-servings').value);
+            const difficulty = document.getElementById('sr-difficulty').value;
+            let image = document.getElementById('sr-image').value.trim();
+            
+            if(!image) {
+                image = "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80";
+            }
+
+            const ingredientsRaw = document.getElementById('sr-ingredients').value;
+            const stepsRaw = document.getElementById('sr-steps').value;
+
+            const ingredients = ingredientsRaw.split('\n').filter(i => i.trim() !== '');
+            const steps = stepsRaw.split('\n').filter(s => s.trim() !== '');
+
+            const newRecipe = {
+                id: Date.now(),
+                title,
+                category,
+                time,
+                servings,
+                difficulty,
+                image,
+                likes: 1,
+                ingredients,
+                steps
+            };
+
+            recipes.unshift(newRecipe);
+            localStorage.setItem('culinary_recipes', JSON.stringify(recipes));
+
+            // Resetar formulário
+            document.getElementById('submit-recipe-form').reset();
+            renderRecipesGrid();
+            renderFeaturedRecipes();
+            populatePortionRecipesSelect();
+
+            showToast("Receita publicada com sucesso!");
+            switchTab('receitas');
+        }
+
+        // Formulário de Contato
+        function handleContactSubmit(event) {
+            event.preventDefault();
+            document.getElementById('contact-form').reset();
+            showToast("Mensagem enviada com sucesso! Retornaremos em breve.");
+        }
+
+        // Newsletter
+        function handleNewsletter(event) {
+            event.preventDefault();
+            event.target.reset();
+            showToast("Inscrição realizada com sucesso! Bem-vindo à nossa newsletter.");
+        }
+    </script>
+</body>
+</html>
